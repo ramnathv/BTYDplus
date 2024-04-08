@@ -312,7 +312,7 @@ elog2cbs <- function(elog, units = "week", T.cal = NULL, T.tot = NULL) {
     stopifnot(is.numeric(elog_dt$sales))
   }
   # merge transactions with same dates
-  elog_dt <- elog_dt[, list(sales = sum(sales)), by = "cust,date"]
+  elog_dt <- elog_dt[, list(sales = sum(sales)), by = c("cust","date")]
   # determine time since first date for each customer
   elog_dt[, `:=`(first, min(date)), by = "cust"]
   elog_dt[, `:=`(t, as.numeric(difftime(date, first, units = units))), by = "cust"]
@@ -325,7 +325,7 @@ elog2cbs <- function(elog, units = "week", T.cal = NULL, T.tot = NULL) {
                       litt = sum(log(itt[itt > 0])),
                       sales = sum(sales),
                       sales.x = sum(sales[t > 0])),
-                 by = "cust,first"]
+                 by = c("cust","first")]
   cbs[, `:=`(T.cal, as.numeric(difftime(T.cal, first, units = units)))]
   setkey(cbs, cust)
   # count events in validation period
